@@ -33,20 +33,39 @@ const playerSel = (function(){
         }
     }
     _playerPieceSelectors.forEach(button => button.addEventListener('click', _getPlayerChoice));
-    const playerSelected = ()=>{
-        _playerPieceSelectors.forEach(button => button.removeEventListener('click', _getPlayerChoice));
-    }
+    const playerSelected = ()=>_playerPieceSelectors.forEach(
+        button => button.removeEventListener('click', _getPlayerChoice));
     const getPlayerSelection = ()=>_playerSelection;
     return{getPlayerSelection, playerSelected};
 })();
 
 const display = (function(){
-    const player1 = Player(playerSel.getPlayerSelection());
+    let firstMove = false;
+    let player1;
+    let player2;
     const _gameBoardPieces = document.querySelectorAll(".board-space");
+    let currentPlayer;
+
+    const _playerSet = ()=>{
+        player1 = Player(playerSel.getPlayerSelection());
+        playerSel.playerSelected();
+        player1.getType() == 'x' ? player2 = Player('o') : player2 = Player('x');
+        firstMove = true;
+        currentPlayer = player1;
+    }
+
+    const _playerSwap = ()=>{
+        currentPlayer == player1 ? currentPlayer = player2 : currentPlayer = player1;
+    }
 
     const _updateBoardPiece = (index, e) =>{
-        _gameBoardPieces[index].textContent = index;
-        board.update(index,player1);
+        if(firstMove == false){
+            _playerSet();
+        }
+        
+        e.target.textContent = currentPlayer.getType();
+        board.update(index,currentPlayer);
+        _playerSwap();
     }
 
     _gameBoardPieces.forEach((button, index) => button.addEventListener('click', _updateBoardPiece.bind(null,index)));
