@@ -1,6 +1,5 @@
 const Player = type=>{
     const getType = ()=>type;
-
     return{getType};
 };
 
@@ -10,11 +9,26 @@ const board = (function(){
         _gameBoard[index] = player.getType();
     }
 
-    return {update, _gameBoard};
+    const _checkWinCon = (a,b,c)=> ((a==b && a==c) && a != '') ?  1 : 0;
+
+    const checkWin = ()=>{
+        return _checkWinCon(_gameBoard[0], _gameBoard[1], _gameBoard[2]) ? _gameBoard[0]:
+        _checkWinCon(_gameBoard[3], _gameBoard[4], _gameBoard[5]) ? _gameBoard[3]:
+        _checkWinCon(_gameBoard[6], _gameBoard[7], _gameBoard[8]) ? _gameBoard[6]:
+        _checkWinCon(_gameBoard[0], _gameBoard[3], _gameBoard[6]) ? _gameBoard[0]:
+        _checkWinCon(_gameBoard[1], _gameBoard[4], _gameBoard[7]) ? _gameBoard[1]:
+        _checkWinCon(_gameBoard[2], _gameBoard[5], _gameBoard[8]) ? _gameBoard[2]:
+        _checkWinCon(_gameBoard[0], _gameBoard[4], _gameBoard[8]) ? _gameBoard[0]:
+        _checkWinCon(_gameBoard[2], _gameBoard[4], _gameBoard[6]) ? _gameBoard[6]: 0;
+    }
+
+    return {update, checkWin};
 
 })();
+
+//this section regards the player selection buttons
 const playerSel = (function(){
-    //this section regards the player selection buttons
+    //default player selection is x
     let _playerSelection = "x";
     const _playerPieceSelectors = document.querySelectorAll(".piece-button");
     const _getPlayerChoice = e => {
@@ -32,12 +46,21 @@ const playerSel = (function(){
             }
         }
     }
+
+    //add event listeners to the selection buttons
     _playerPieceSelectors.forEach(button => button.addEventListener('click', _getPlayerChoice));
+
+    //a function that removes the event listeners from the buttons.
     const playerSelected = ()=>_playerPieceSelectors.forEach(
         button => button.removeEventListener('click', _getPlayerChoice));
+
+    //function that returns what the player chose
     const getPlayerSelection = ()=>_playerSelection;
+
     return{getPlayerSelection, playerSelected};
 })();
+
+
 
 const display = (function(){
     let firstMove = false;
@@ -64,12 +87,14 @@ const display = (function(){
         }
         
         e.target.textContent = currentPlayer.getType();
+        e.target.classList.add(`${currentPlayer.getType()}-piece`)
         board.update(index,currentPlayer);
+        if(board.checkWin()){
+            console.log(`${currentPlayer.getType()} Wins!`);
+        }
         _playerSwap();
     }
-
-    _gameBoardPieces.forEach((button, index) => button.addEventListener('click', _updateBoardPiece.bind(null,index)));
-
+    _gameBoardPieces.forEach((button, index) => button.addEventListener('click', _updateBoardPiece.bind(null,index), {once:true}));
 })();
 
 

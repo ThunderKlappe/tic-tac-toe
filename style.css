@@ -87,6 +87,7 @@ body{
     border: none;
     border-top: 4px solid #121212;
     border-left: 4px solid #121212;
+    font-size: 50px;
 }
 .no-top-border{
     border-top: none;
