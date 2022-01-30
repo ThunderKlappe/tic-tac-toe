@@ -12,7 +12,7 @@ const board = (function(){
     const _checkWinCon = (a,b,c)=> ((a==b && a==c) && a != '') ?  1 : 0;
 
     const checkWin = ()=>{
-        return _checkWinCon(_gameBoard[0], _gameBoard[1], _gameBoard[2]) ? _gameBoard[0]:
+        let _winner = _checkWinCon(_gameBoard[0], _gameBoard[1], _gameBoard[2]) ? _gameBoard[0]:
         _checkWinCon(_gameBoard[3], _gameBoard[4], _gameBoard[5]) ? _gameBoard[3]:
         _checkWinCon(_gameBoard[6], _gameBoard[7], _gameBoard[8]) ? _gameBoard[6]:
         _checkWinCon(_gameBoard[0], _gameBoard[3], _gameBoard[6]) ? _gameBoard[0]:
@@ -20,6 +20,13 @@ const board = (function(){
         _checkWinCon(_gameBoard[2], _gameBoard[5], _gameBoard[8]) ? _gameBoard[2]:
         _checkWinCon(_gameBoard[0], _gameBoard[4], _gameBoard[8]) ? _gameBoard[0]:
         _checkWinCon(_gameBoard[2], _gameBoard[4], _gameBoard[6]) ? _gameBoard[6]: 0;
+
+        if (_winner == 0 && !(_gameBoard.includes(''))){
+            _winner = "draw";
+        }
+
+        return _winner
+
     }
 
     return {update, checkWin};
@@ -63,36 +70,37 @@ const playerSel = (function(){
 
 
 const display = (function(){
-    let firstMove = false;
-    let player1;
-    let player2;
+    let _firstMove = false;
+    let _player1;
+    let _player2;
     const _gameBoardPieces = document.querySelectorAll(".board-space");
-    let currentPlayer;
+    let _currentPlayer;
 
     const _playerSet = ()=>{
-        player1 = Player(playerSel.getPlayerSelection());
+        _player1 = Player(playerSel.getPlayerSelection());
         playerSel.playerSelected();
-        player1.getType() == 'x' ? player2 = Player('o') : player2 = Player('x');
-        firstMove = true;
-        currentPlayer = player1;
-    }
-
-    const _playerSwap = ()=>{
-        currentPlayer == player1 ? currentPlayer = player2 : currentPlayer = player1;
+        _player1.getType() == 'x' ? _player2 = Player('o') : _player2 = Player('x');
+        _firstMove = true;
+        _currentPlayer = _player1;
     }
 
     const _updateBoardPiece = (index, e) =>{
-        if(firstMove == false){
+        if(_firstMove == false){
             _playerSet();
         }
         
-        e.target.textContent = currentPlayer.getType();
-        e.target.classList.add(`${currentPlayer.getType()}-piece`)
-        board.update(index,currentPlayer);
-        if(board.checkWin()){
-            console.log(`${currentPlayer.getType()} Wins!`);
+        e.target.textContent = _currentPlayer.getType();
+        e.target.classList.add(`${_currentPlayer.getType()}-piece`)
+        board.update(index,_currentPlayer);
+
+        if(board.checkWin() == 'x' || board.checkWin() == 'o'){
+            console.log(`${_currentPlayer.getType()} Wins!`);
+            _gameBoardPieces.forEach(button => button.replaceWith(button.cloneNode(true)));
+        }else if(board.checkWin() == 'draw'){
+            console.log(`Draw`);
+            _gameBoardPieces.forEach(button => button.replaceWith(button.cloneNode(true)));
         }
-        _playerSwap();
+        _currentPlayer == _player1 ? _currentPlayer = _player2 : _currentPlayer = _player1;
     }
     _gameBoardPieces.forEach((button, index) => button.addEventListener('click', _updateBoardPiece.bind(null,index), {once:true}));
 })();
