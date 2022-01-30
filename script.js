@@ -75,7 +75,11 @@ const AIPlayer = (type, difficulty)=>{
     }
 
     const makeMove = function(){
-        _chooseMove.call(this);
+        if(Math.floor(Math.random()*difficulty) == 0){
+            _chooseMove.call(this);
+        }else{
+            _pickRandom.call(this);
+        }
     }
 
     return {getType, makeMove};
