@@ -22,14 +22,14 @@ const AIPlayer = (type, difficulty)=>{
     }
 
     const _pickRandom = function(){
-        let _randStart = Math.floor((Math.random()*9))
+        let _randStart = Math.floor((Math.random()*board.getBoard().length))
         while(true){
             if(board.getBoard()[_randStart] == ''){
                 display.playPiece(_randStart, this);
                 return;
             }else{
                 _randStart++;
-                if(_randStart == 9){
+                if(_randStart == board.getBoard().length){
                     _randStart = 0;
                 }
             }
@@ -49,14 +49,13 @@ const AIPlayer = (type, difficulty)=>{
             let _oppPlays = board.getBoard().reduce((a,b)=> (b == display.getPlayer1().getType() ?
                 a + 1 : a), 0);
             if(_oppPlays == 2){
-                if(board.getBoard()[1] != display.getPlayer1().getType() &&
-                board.getBoard()[3] != display.getPlayer1().getType() &&
-                board.getBoard()[5] != display.getPlayer1().getType() &&
-                board.getBoard()[7] != display.getPlayer1().getType()){
-                    board.getBoard()[1] == '' ? display.playPiece(1,this):
-                    board.getBoard()[3] == '' ? display.playPiece(3,this):
-                    board.getBoard()[5] == '' ? display.playPiece(5,this):
-                    board.getBoard()[7] == '' ? display.playPiece(7,this):0;
+                //If the opponent played on two corners, play on a side.
+                let _sidePieces = [];
+                for(let i = 1; i<board.getBoard().length; i += 2){
+                    _sidePieces.push(board.getBoard()[i]);
+                }
+                if(!_sidePieces.includes(display.getPlayer1().getType())){
+                    display.playPiece(1,this);
                     return;
                 }
             }
