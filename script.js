@@ -20,7 +20,7 @@ const AIPlayer = (type, difficulty)=>{
         }
         return false;
     }
-
+    //picks a random empty spot
     const _pickRandom = function(){
         let _randStart = Math.floor((Math.random()*board.getBoard().length))
         while(true){
@@ -75,6 +75,7 @@ const AIPlayer = (type, difficulty)=>{
     }
 
     const makeMove = function(){
+        //decided whether to make the correct move or random move based on difficulty
         if(Math.floor(Math.random()*difficulty) == 0){
             _chooseMove.call(this);
         }else{
@@ -87,13 +88,15 @@ const AIPlayer = (type, difficulty)=>{
 
 const board = (() => {
     let _gameBoard = ['', '', '', '', '', '', '', '', ''];
+    const getBoard = () => _gameBoard;
+
     const update = (index, player) => {
         _gameBoard[index] = player.getType();
     };
-    const getBoard = () => _gameBoard;
-
+    //if all three entries are the same, return true
     const _checkWinCon = (a, b, c) => ((a == b && a == c) && a != '') ? 1 : 0;
 
+    //check all rows, columns and diagonals for wins
     const checkIfWon = board => {
         let _winner = _checkWinCon(board[0], board[1], board[2]) ? board[0] :
             _checkWinCon(board[3], board[4], board[5]) ? board[3] :
@@ -122,19 +125,14 @@ const playerSel = (() => {
     let _playerSelection = "x";
     const _playerPieceSelectors = document.querySelectorAll(".piece-button");
     const _getPlayerChoice = e => {
-        if (e.target.id == "x-piece") {
-            _playerPieceSelectors[0].classList.add('active');
-            _playerSelection = 'x';
-            if (_playerPieceSelectors[1].classList.contains('active')) {
-                _playerPieceSelectors[1].classList.remove('active');
+        //gets the value of what is selected and makes only once choice active at a time
+        _playerSelection = e.target.value;
+        e.target.classList.add("active");
+        _playerPieceSelectors.forEach(button => {
+            if(button != e.target){
+                button.classList.remove("active");
             }
-        } else if (e.target.id == "o-piece") {
-            _playerPieceSelectors[1].classList.add('active');
-            _playerSelection = "o";
-            if (_playerPieceSelectors[0].classList.contains('active')) {
-                _playerPieceSelectors[0].classList.remove('active');
-            }
-        }
+        });
     };
 
     //add event listeners to the selection buttons
@@ -156,6 +154,7 @@ const difficultySel = (() => {
     let _difSelection = 3;
     const _difficultySelectors = document.querySelectorAll(".difficulty-button");
     const _getDifChoice = e => {
+        //gets the value of what is selected and makes only once choice active at a time
         _difSelection = e.target.value;
         e.target.classList.add("active");
         _difficultySelectors.forEach(button => {
@@ -188,6 +187,7 @@ const display = (() => {
     let _currentPlayer;
     let _gameOver = false;
 
+    //creates the two players, deactivates settings buttons, and activates board
     const _startGame = () => {
         _startGameButton.classList.add("active");
         _player1 = Player(playerSel.getPlayerSelection());
@@ -209,6 +209,7 @@ const display = (() => {
         board.update(index, player);
     };
 
+    //if the current player is the computer, they make their move
     const _nextMove = () => {
         if(_currentPlayer == _player1){
             return;
@@ -217,6 +218,7 @@ const display = (() => {
         }
     }
 
+    //plays a piece and checks if the game is over
     const playPiece = (index, player) =>{
         _updateBoardPiece(index, player);
         if (board.checkIfWon(board.getBoard())) {
