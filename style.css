@@ -75,6 +75,21 @@ body{
     background-color: #30475E;
 }
 
+#start-game{
+    border: 1px solid #121212;
+    background-color: #F5F5F5;
+    color: #121212;
+    padding: 5px 8px;
+    border-radius: 10px;
+    margin: 10px;
+    font-size: 20px;
+    transition: .5s;
+}
+#start-game.active{
+    background-color: #121212;
+    color: #F5F5F5;
+}
+
 #board{
     display: grid;
     grid-template-columns: 33% 33% 33%;
