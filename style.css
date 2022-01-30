@@ -34,7 +34,7 @@ body{
     border: 3px solid #121212;
     border-radius: 20px;
     width: 400px;
-    height: 600px;
+    height: 700px;
     padding: 10px;
 }
 .instructions{
@@ -42,23 +42,44 @@ body{
     font-weight: bold;
     margin-top: 5px;
 }
-#piece-container{
+.choice-container{
     display: flex;
     gap: 25px;
     margin: 10px;
 }
-.piece-button{
+button{
     display: flex;
     align-items: center;
     justify-content: center;
+    border: 1px solid #121212;
+    border-radius: 15px;
+    background-color: #F5F5F5;
+    color: #121212;
+    transition: .5s;
+}
+
+.difficulty-button{
+    width: 110px;
+    font-size: 18px;
+    padding: 5px 0px;
+}
+
+#start-game{
+    padding: 5px 8px;
+    margin: 10px;
+    font-size: 20px;
+    font-weight: bold;
+}
+.active{
+    background-color: #121212;
+    color: #F5F5F5;
+}
+
+.piece-button{
     height: 50px;
     width: 50px;
     font-size: 24px;
     font-weight: bold;
-    border: 1px solid #121212;
-    border-radius: 15px;
-    background-color: #F5F5F5;
-    transition: .5s;
 }
 .x-piece{
     color: #F05454;
@@ -75,22 +96,8 @@ body{
     background-color: #30475E;
 }
 
-#start-game{
-    border: 1px solid #121212;
-    background-color: #F5F5F5;
-    color: #121212;
-    padding: 5px 8px;
-    border-radius: 10px;
-    margin: 10px;
-    font-size: 20px;
-    transition: .5s;
-}
-#start-game.active{
-    background-color: #121212;
-    color: #F5F5F5;
-}
-
 #board{
+    margin: 15px;
     display: grid;
     grid-template-columns: 33% 33% 33%;
 }
@@ -102,6 +109,7 @@ body{
     border: none;
     border-top: 4px solid #121212;
     border-left: 4px solid #121212;
+    border-radius: 0;
     font-size: 50px;
 }
 .no-top-border{

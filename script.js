@@ -146,6 +146,34 @@ const playerSel = (() => {
     return { getPlayerSelection, playerSelected };
 })();
 
+//this section regards the difficulty selection buttons
+const difficultySel = (() => {
+    //default difficulty selection is Easy
+    let _difSelection = 3;
+    const _difficultySelectors = document.querySelectorAll(".difficulty-button");
+    const _getDifChoice = e => {
+        _difSelection = e.target.value;
+        e.target.classList.add("active");
+        _difficultySelectors.forEach(button => {
+            if(button != e.target){
+                button.classList.remove("active");
+            }
+        });
+    };
+
+    //add event listeners to the selection buttons
+    _difficultySelectors.forEach(button => button.addEventListener('click', _getDifChoice));
+
+    //a function that removes the event listeners from the buttons.
+    const difficultySelected = () => _difficultySelectors.forEach(
+        button => button.removeEventListener('click', _getDifChoice));
+
+    //function that returns what the player chose
+    const getDifficultySelection = () => _difSelection;
+
+    return { getDifficultySelection, difficultySelected };
+})();
+
 
 
 const display = (() => {
@@ -156,11 +184,14 @@ const display = (() => {
     let _currentPlayer;
     let _gameOver = false;
 
-    const _playerSet = () => {
+    const _startGame = () => {
         _startGameButton.classList.add("active");
         _player1 = Player(playerSel.getPlayerSelection());
         playerSel.playerSelected();
-        _player1.getType() == 'x' ? _player2 = AIPlayer('o') : _player2 = AIPlayer('x');
+        _player1.getType() == 'x' ? 
+            _player2 = AIPlayer('o', difficultySel.getDifficultySelection()): 
+            _player2 = AIPlayer('x', difficultySel.getDifficultySelection());
+        difficultySel.difficultySelected();
         _currentPlayer = _player1;
         _gameBoardPieces.forEach((button, index) => button.addEventListener(
             'click', playPiece.bind(null, index, _player1)));
@@ -202,7 +233,7 @@ const display = (() => {
 
     const getPlayer1 = () => _player1;
 
-    _startGameButton.addEventListener('click', _playerSet, {once:true});
+    _startGameButton.addEventListener('click', _startGame, {once:true});
 
     return {playPiece, getPlayer1};
 
