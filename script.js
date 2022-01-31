@@ -39,6 +39,9 @@ const AIPlayer = (type, difficulty)=>{
 
     const _chooseMove = function(){
         let _playMade = false;
+        let _oppPlays = board.getBoard().reduce((a,b)=> (b == display.getPlayer1().getType() ?
+        a + 1 : a), 0);
+
         //check if the AI can win
         _playMade = _defendOrAttack.call(this, this);
         //check if the Player can win
@@ -46,9 +49,14 @@ const AIPlayer = (type, difficulty)=>{
             _playMade = _defendOrAttack.call(this, display.getPlayer1());
         }
         if(!_playMade){
-            let _oppPlays = board.getBoard().reduce((a,b)=> (b == display.getPlayer1().getType() ?
-                a + 1 : a), 0);
-            if(_oppPlays == 2){
+            if(_oppPlays == 0){
+                display.playPiece(0,this);
+                return;
+            
+            }else if(_oppPlays == 1 && type == 'x'){
+                display.playPiece(8,this);
+                return;
+            }else if(_oppPlays == 2){
                 //If the opponent played on two corners, play on a side.
                 let _sidePieces = [];
                 for(let i = 1; i<board.getBoard().length; i += 2){
@@ -59,6 +67,7 @@ const AIPlayer = (type, difficulty)=>{
                     return;
                 }
             }
+            
             //go to the middle if it's available
             if(board.getBoard()[4] == ''){
                 display.playPiece(4,this);
@@ -238,7 +247,12 @@ const display = (() => {
             _player2 = AIPlayer('o', difficultySel.getDifficultySelection()): 
             _player2 = AIPlayer('x', difficultySel.getDifficultySelection());
         difficultySel.deactivateDifficulty();
-        _currentPlayer = _player1;
+        if(_player1.getType() == 'x'){
+            _currentPlayer = _player1;
+        }else{
+            _currentPlayer = _player2;
+            _player2.makeMove();
+        }
         _gameBoardPieces.forEach((button, index) => button.addEventListener(
             'click', playPiece.bind(null, index, _player1)));
 
