@@ -251,7 +251,7 @@ const display = (() => {
             _currentPlayer = _player1;
         }else{
             _currentPlayer = _player2;
-            _player2.makeMove();
+            setTimeout(()=>_player2.makeMove(), 500);
         }
         _gameBoardPieces.forEach((button, index) => button.addEventListener(
             'click', playPiece.bind(null, index, _player1)));
@@ -270,7 +270,7 @@ const display = (() => {
         if(_currentPlayer == _player1){
             return;
         }else{
-            _player2.makeMove();
+            setTimeout(()=>_player2.makeMove(), 500);
         }
     }
 
