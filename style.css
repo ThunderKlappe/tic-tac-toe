@@ -118,3 +118,16 @@ button{
 .no-left-border{
     border-left: none;
 }
+
+#winner{
+    font-size: 20px;
+}
+#new-game-button{
+    font-size: 18px;
+    padding: 5px 8px;
+    margin: 10px;
+}
+#new-game-button:hover{
+    color: #F5F5F5;
+    background-color: #121212;
+}

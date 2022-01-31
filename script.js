@@ -93,6 +93,8 @@ const board = (() => {
     const update = (index, player) => {
         _gameBoard[index] = player.getType();
     };
+
+    const clearBoard = () => _gameBoard = ['', '', '', '', '', '', '', '', ''];
     //if all three entries are the same, return true
     const _checkWinCon = (a, b, c) => ((a == b && a == c) && a != '') ? 1 : 0;
 
@@ -115,7 +117,7 @@ const board = (() => {
 
     };
 
-    return { update, getBoard, checkIfWon };
+    return { update, getBoard, checkIfWon, clearBoard };
 
 })();
 
@@ -136,16 +138,25 @@ const playerSel = (() => {
     };
 
     //add event listeners to the selection buttons
-    _playerPieceSelectors.forEach(button => button.addEventListener('click', _getPlayerChoice));
+    const _activatePlayers = () => _playerPieceSelectors.forEach(
+        button => button.addEventListener('click', _getPlayerChoice));
+    _activatePlayers();
 
     //a function that removes the event listeners from the buttons.
-    const playerSelected = () => _playerPieceSelectors.forEach(
+    const deactivatePlayers = () => _playerPieceSelectors.forEach(
         button => button.removeEventListener('click', _getPlayerChoice));
+
+    const resetPlayer = () =>{
+        _playerSelection = 'x';
+        _playerPieceSelectors.forEach(button => button.classList.remove('active'))
+        _playerPieceSelectors[0].classList.add('active');
+        _activatePlayers();
+    }
 
     //function that returns what the player chose
     const getPlayerSelection = () => _playerSelection;
 
-    return { getPlayerSelection, playerSelected };
+    return { getPlayerSelection, deactivatePlayers, resetPlayer };
 })();
 
 //this section regards the difficulty selection buttons
@@ -164,17 +175,29 @@ const difficultySel = (() => {
         });
     };
 
+    
+
     //add event listeners to the selection buttons
-    _difficultySelectors.forEach(button => button.addEventListener('click', _getDifChoice));
+    const _activateDifficulty = () => _difficultySelectors.forEach(
+        button => button.addEventListener('click', _getDifChoice));
+    _activateDifficulty();
 
     //a function that removes the event listeners from the buttons.
-    const difficultySelected = () => _difficultySelectors.forEach(
+    const deactivateDifficulty = () => _difficultySelectors.forEach(
         button => button.removeEventListener('click', _getDifChoice));
+
+    //resets to default
+    const resetDifficulty = () =>{
+        _difSelection = 3;
+        _difficultySelectors.forEach(button => button.classList.remove('active'))
+        _difficultySelectors[0].classList.add('active');
+        _activateDifficulty();
+    }
 
     //function that returns what the player chose
     const getDifficultySelection = () => _difSelection;
 
-    return { getDifficultySelection, difficultySelected };
+    return { getDifficultySelection, deactivateDifficulty, resetDifficulty};
 })();
 
 
@@ -182,20 +205,39 @@ const difficultySel = (() => {
 const display = (() => {
     let _player1;
     let _player2;
-    const _gameBoardPieces = document.querySelectorAll(".board-space");
-    const _startGameButton = document.querySelector("#start-game");
     let _currentPlayer;
     let _gameOver = false;
+    let _gameBoardPieces = document.querySelectorAll(".board-space");
+    const _startGameButton = document.querySelector("#start-game");
+    const _winnerDisplay = document.querySelector("#winner");
+
+
+    const _newGame = ()=>{
+        _gameOver = false;
+        board.clearBoard();
+        _gameBoardPieces.forEach(button=>{
+            button.textContent = '';
+            button.classList.remove('x-piece');
+            button.classList.remove('o-piece');
+        })
+        playerSel.resetPlayer();
+        difficultySel.resetDifficulty();
+        _startGameButton.classList.remove('active');
+        _startGameButton.addEventListener('click', _startGame);
+        _winnerDisplay.textContent = '';
+        _winnerDisplay.parentElement.lastChild.remove();
+    }
 
     //creates the two players, deactivates settings buttons, and activates board
     const _startGame = () => {
         _startGameButton.classList.add("active");
+        _startGameButton.removeEventListener('click', _startGame);
         _player1 = Player(playerSel.getPlayerSelection());
-        playerSel.playerSelected();
+        playerSel.deactivatePlayers();
         _player1.getType() == 'x' ? 
             _player2 = AIPlayer('o', difficultySel.getDifficultySelection()): 
             _player2 = AIPlayer('x', difficultySel.getDifficultySelection());
-        difficultySel.difficultySelected();
+        difficultySel.deactivateDifficulty();
         _currentPlayer = _player1;
         _gameBoardPieces.forEach((button, index) => button.addEventListener(
             'click', playPiece.bind(null, index, _player1)));
@@ -222,14 +264,21 @@ const display = (() => {
     const playPiece = (index, player) =>{
         _updateBoardPiece(index, player);
         if (board.checkIfWon(board.getBoard())) {
-            _winnerDisplay = document.querySelector("#winner");
             if (board.checkIfWon(board.getBoard()) == 'x' || board.checkIfWon(board.getBoard()) == 'o') {
-                _winnerDisplay.textContent = `${player.getType()} Wins!`;
+                _winnerDisplay.textContent = `${player.getType().toUpperCase()} Wins!`;
             } else if (board.checkIfWon(board.getBoard()) == 'draw') {
                 _winnerDisplay.textContent = `It's a Draw`;
             }
             _gameBoardPieces.forEach(button => button.replaceWith(button.cloneNode(true)));
+            //need to update what the gameboard pieces are after they've been cloned to remove
+            //the event listeners
+            _gameBoardPieces = document.querySelectorAll(".board-space");
             _gameOver = true;
+            const _newGameButton = document.createElement("button");
+            _newGameButton.setAttribute("id", "new-game-button")
+            _newGameButton.textContent = "New Game?"
+            _winnerDisplay.parentElement.appendChild(_newGameButton);
+            _newGameButton.addEventListener('click', _newGame);
         }
         if(!_gameOver){
             _currentPlayer == _player1 ? _currentPlayer = _player2 : _currentPlayer = _player1;
@@ -239,7 +288,7 @@ const display = (() => {
 
     const getPlayer1 = () => _player1;
 
-    _startGameButton.addEventListener('click', _startGame, {once:true});
+    _startGameButton.addEventListener('click', _startGame);
 
     return {playPiece, getPlayer1};
 
