@@ -54,8 +54,10 @@ const AIPlayer = (type, difficulty)=>{
                 return;
             
             }else if(_oppPlays == 1 && type == 'x'){
-                display.playPiece(8,this);
-                return;
+                if(board.getBoard()[8] == ''){
+                    display.playPiece(8,this);
+                    return;
+                }
             }else if(_oppPlays == 2){
                 //If the opponent played on two corners, play on a side.
                 let _sidePieces = [];
