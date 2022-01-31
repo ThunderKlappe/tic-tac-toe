@@ -108,9 +108,6 @@ button{
 
 #board{
     margin: 15px;
-    padding: 20px;
-    border: 5px solid #121212;
-    border-radius: 10px;
     display: grid;
     grid-template-columns: 33% 33% 33%;
 }
