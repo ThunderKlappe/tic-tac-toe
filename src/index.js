@@ -99,6 +99,97 @@ const AIPlayer = (type, difficulty) => {
     return { getType, makeMove };
 };
 
+// eslint-disable-next-line no-unused-vars
+const _makeDisplay = (() => {
+    const header = DOMManip.makeNewElement("div", "header", "", "Tic-Tac-Toe");
+    const content = DOMManip.makeNewElement("div", "content");
+    const boardContainer = DOMManip.makeNewElement("div", "board-container");
+    const pieceSelection = DOMManip.makeNewElement(
+        "div",
+        "piece-selection",
+        "instructions",
+        "Please Select Your Piece:"
+    );
+    const pieceSelectionHelper = DOMManip.makeNewElement(
+        "div",
+        "piece-selection-helper",
+        "sub-instructions",
+        "X goes first, O goes second"
+    );
+    const pieceContainer = DOMManip.makeNewElement("div", "piece-container", "choice-container");
+    const xPiece = DOMManip.makeNewElement("button", "x-piece", "piece-button x-piece active", "x", {
+        value: "x",
+    });
+    const oPiece = DOMManip.makeNewElement("button", "o-piece", "piece-button o-piece", "o", {
+        value: "o",
+    });
+
+    const aiSelection = DOMManip.makeNewElement(
+        "div",
+        "ai-selection",
+        "instructions",
+        "Please Select The Difficulty"
+    );
+    const difficultyContainer = DOMManip.makeNewElement("div", "difficulty-container", "choice-container");
+    const easyButton = DOMManip.makeNewElement("button", "easy-button", "difficulty-button active", "Easy", {
+        value: "3",
+    });
+    const mediumButton = DOMManip.makeNewElement("button", "medium-button", "difficulty-button", "Medium", {
+        value: "2",
+    });
+    const impossibleButton = DOMManip.makeNewElement(
+        "button",
+        "impossible-button",
+        "difficulty-button",
+        "Impossible",
+        {
+            value: "1",
+        }
+    );
+
+    const startGame = DOMManip.makeNewElement("button", "start-game", "", "Start Game");
+
+    const board = DOMManip.makeNewElement("div", "board");
+    const boardSpace1 = DOMManip.makeNewElement("button", "", "board-space no-top-border no-left-border");
+    const boardSpace2 = DOMManip.makeNewElement("button", "", "board-space no-top-border");
+    const boardSpace3 = DOMManip.makeNewElement("button", "", "board-space no-top-border");
+    const boardSpace4 = DOMManip.makeNewElement("button", "", "board-space no-left-border");
+    const boardSpace5 = DOMManip.makeNewElement("button", "", "board-space");
+    const boardSpace6 = DOMManip.makeNewElement("button", "", "board-space");
+    const boardSpace7 = DOMManip.makeNewElement("button", "", "board-space no-left-border");
+    const boardSpace8 = DOMManip.makeNewElement("button", "", "board-space");
+    const boardSpace9 = DOMManip.makeNewElement("button", "", "board-space");
+
+    const winner = DOMManip.makeNewElement("div", "winner");
+    DOMManip.appendChildren(pieceContainer, xPiece, oPiece);
+    DOMManip.appendChildren(difficultyContainer, easyButton, mediumButton, impossibleButton);
+    DOMManip.appendChildren(
+        board,
+        boardSpace1,
+        boardSpace2,
+        boardSpace3,
+        boardSpace4,
+        boardSpace5,
+        boardSpace6,
+        boardSpace7,
+        boardSpace8,
+        boardSpace9
+    );
+    DOMManip.appendChildren(
+        boardContainer,
+        pieceSelection,
+        pieceSelectionHelper,
+        pieceContainer,
+        aiSelection,
+        difficultyContainer,
+        startGame,
+        board,
+        winner
+    );
+    content.appendChild(boardContainer);
+    DOMManip.appendChildren(document.body, header, content);
+})();
+
 const board = (() => {
     let _gameBoard = ["", "", "", "", "", "", "", "", ""];
     const getBoard = () => _gameBoard;
@@ -219,27 +310,6 @@ const difficultySel = (() => {
 })();
 
 const display = (() => {
-    const _makeDisplay = (() => {
-        const header = DOMManip.makeNewElement("div", "header", "", "Tic-Tac-Toe");
-        const content = DOMManip.makeNewElement("div", "content");
-        const boardContainer = DOMManip.makeNewElement("div", "board-container");
-        const pieceSelection = DOMManip.makeNewElement(
-            "div",
-            "piece-selection",
-            "instructions",
-            "Please Select Your Piece:"
-        );
-        const pieceSelectionHelper = DOMManip.makeNewElement(
-            "div",
-            "piece-selection-helper",
-            "sub-instructions",
-            "X goes first, O goes second"
-        );
-        const pieceContainer = DOMManip.makeNewElement("div", "piece-container", "choice-container");
-        const xPiece = DOMManip.makeNewElement("button", "x-piece", "piece-button x-piece active", "x", {
-            value: "x",
-        });
-    })();
     let _player1;
     let _player2;
     let _currentPlayer;
