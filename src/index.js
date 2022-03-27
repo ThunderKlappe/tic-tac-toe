@@ -150,15 +150,29 @@ const _makeDisplay = (() => {
     const startGame = DOMManip.makeNewElement("button", "start-game", "", "Start Game");
 
     const board = DOMManip.makeNewElement("div", "board");
-    const boardSpace1 = DOMManip.makeNewElement("button", "", "board-space no-top-border no-left-border");
-    const boardSpace2 = DOMManip.makeNewElement("button", "", "board-space no-top-border");
-    const boardSpace3 = DOMManip.makeNewElement("button", "", "board-space no-top-border");
-    const boardSpace4 = DOMManip.makeNewElement("button", "", "board-space no-left-border");
-    const boardSpace5 = DOMManip.makeNewElement("button", "", "board-space");
-    const boardSpace6 = DOMManip.makeNewElement("button", "", "board-space");
-    const boardSpace7 = DOMManip.makeNewElement("button", "", "board-space no-left-border");
-    const boardSpace8 = DOMManip.makeNewElement("button", "", "board-space");
-    const boardSpace9 = DOMManip.makeNewElement("button", "", "board-space");
+    const boardSpace1 = DOMManip.makeNewElement(
+        "button",
+        "",
+        "board-space no-top-border no-left-border",
+        "",
+        { "data-space": 0 }
+    );
+    const boardSpace2 = DOMManip.makeNewElement("button", "", "board-space no-top-border", "", {
+        "data-space": 1,
+    });
+    const boardSpace3 = DOMManip.makeNewElement("button", "", "board-space no-top-border", "", {
+        "data-space": 2,
+    });
+    const boardSpace4 = DOMManip.makeNewElement("button", "", "board-space no-left-border", "", {
+        "data-space": 3,
+    });
+    const boardSpace5 = DOMManip.makeNewElement("button", "", "board-space", "", { "data-space": 4 });
+    const boardSpace6 = DOMManip.makeNewElement("button", "", "board-space", "", { "data-space": 5 });
+    const boardSpace7 = DOMManip.makeNewElement("button", "", "board-space no-left-border", "", {
+        "data-space": 6,
+    });
+    const boardSpace8 = DOMManip.makeNewElement("button", "", "board-space", "", { "data-space": 7 });
+    const boardSpace9 = DOMManip.makeNewElement("button", "", "board-space", "", { "data-space": 8 });
 
     const winner = DOMManip.makeNewElement("div", "winner");
     DOMManip.appendChildren(pieceContainer, xPiece, oPiece);
@@ -325,6 +339,7 @@ const display = (() => {
             button.textContent = "";
             button.classList.remove("x-piece");
             button.classList.remove("o-piece");
+            button.classList.remove("filled");
         });
         playerSel.resetPlayer();
         difficultySel.resetDifficulty();
@@ -350,24 +365,37 @@ const display = (() => {
             _currentPlayer = _player2;
             setTimeout(() => _player2.makeMove(), 500);
         }
-        _gameBoardPieces.forEach((button, index) =>
-            button.addEventListener("click", playPiece.bind(null, index, _player1))
-        );
+        _gameBoardPieces.forEach(button => button.addEventListener("click", _playPlayer1));
     };
 
     const _updateBoardPiece = (index, player) => {
         _gameBoardPieces[index].textContent = player.getType();
         _gameBoardPieces[index].classList.add(`${player.getType()}-piece`);
-        _gameBoardPieces[index].replaceWith(_gameBoardPieces[index].cloneNode(true));
+        _gameBoardPieces[index].classList.add("filled");
+        _gameBoardPieces[index].removeEventListener("click", _playPlayer1);
         board.update(index, player);
     };
 
+    const _pauseCompPlay = () => {
+        return new Promise(resolve => setTimeout(resolve, 500));
+    };
     //if the current player is the computer, they make their move
     const _nextMove = () => {
         if (_currentPlayer == _player1) {
             return;
-        } else {
-            setTimeout(() => _player2.makeMove(), 500);
+        } else if (_currentPlayer == _player2) {
+            DOMManip.getElements(".board-space:not(.filled)").forEach(button =>
+                button.removeEventListener("click", _playPlayer1)
+            );
+            _pauseCompPlay()
+                .then(() => _player2.makeMove())
+                .then(() => {
+                    if (!_gameOver) {
+                        DOMManip.getElements(".board-space:not(.filled)").forEach(button =>
+                            button.addEventListener("click", _playPlayer1)
+                        );
+                    }
+                });
         }
     };
 
@@ -385,6 +413,7 @@ const display = (() => {
             //the event listeners
             _gameBoardPieces = document.querySelectorAll(".board-space");
             _gameOver = true;
+            _currentPlayer = false;
             const _newGameButton = document.createElement("button");
             _newGameButton.setAttribute("id", "new-game-button");
             _newGameButton.textContent = "New Game?";
@@ -395,6 +424,10 @@ const display = (() => {
             _currentPlayer == _player1 ? (_currentPlayer = _player2) : (_currentPlayer = _player1);
             _nextMove();
         }
+    };
+
+    const _playPlayer1 = e => {
+        playPiece(e.currentTarget.dataset.space, _player1);
     };
 
     const getPlayer1 = () => _player1;
